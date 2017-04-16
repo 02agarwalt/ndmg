@@ -83,7 +83,7 @@ def crawl_bucket(bucket, path, group=False):
 
 
 def create_json(bucket, path, threads, jobdir, group=False, credentials=None,
-                debug=False, dataset=None, log=False, mode):
+                debug=False, dataset=None, log=False, mode='func'):
     """
     Takes parameters to make jsons
     """
