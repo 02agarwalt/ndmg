@@ -33,7 +33,7 @@ import json
 import ast
 
 participant_templ = 'https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_cloud_participant.json'
-group_templ = 'https://raw.githubusercontent.com/neurodata/ndmg/master/templates/ndmg_cloud_group.json'
+group_templ = 'https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_cloud_group.json'
 
 
 def batch_submit(bucket, path, jobdir, credentials=None, state='participant',
@@ -125,9 +125,9 @@ def create_json(bucket, path, threads, jobdir, group=False, credentials=None,
     
     if group:
         if dataset is not None:
-            cmd[9] = re.sub('(<DATASET>)', dataset, cmd[9])
+            cmd[10] = re.sub('(<DATASET>)', dataset, cmd[10])
         else:
-            cmd[9] = re.sub('(<DATASET>)', '', cmd[9])
+            cmd[10] = re.sub('(<DATASET>)', '', cmd[10])
 
         batlas = ['slab907', 'DS03231', 'DS06481', 'DS16784', 'DS72784']
         for atlas in atlases:
@@ -136,7 +136,7 @@ def create_json(bucket, path, threads, jobdir, group=False, credentials=None,
                 continue
             print("... Generating job for {} parcellation".format(atlas))
             job_cmd = deepcopy(cmd)
-            job_cmd[11] = re.sub('(<ATLAS>)', atlas, job_cmd[11])
+            job_cmd[12] = re.sub('(<ATLAS>)', atlas, job_cmd[12])
             if log:
                 job_cmd += ['--log']
             if atlas == 'desikan':
