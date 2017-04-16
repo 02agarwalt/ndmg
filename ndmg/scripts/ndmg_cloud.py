@@ -37,7 +37,7 @@ group_templ = 'https://raw.githubusercontent.com/neurodata/ndmg/master/templates
 
 
 def batch_submit(bucket, path, jobdir, credentials=None, state='participant',
-                 debug=False, dataset=None, log=False, mode):
+                 debug=False, dataset=None, log=False, mode='func'):
     """
     Searches through an S3 bucket, gets all subject-ids, creates json files
     for each, submits batch jobs, and returns list of job ids to query status
