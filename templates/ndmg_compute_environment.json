@@ -20,7 +20,7 @@
         "securityGroupIds": [
             "sg-bb11e9c4"
         ],
-        "instanceRole": "arn:aws:iam::967305970717:instance-profile/ecsInstanceRole",
+        "instanceRole": "arn:aws:iam::967305970717:instance-profile/ecsInstanceRole"
     },
     "serviceRole": "arn:aws:iam::967305970717:role/service-role/AWSBatchServiceRole"
 }
