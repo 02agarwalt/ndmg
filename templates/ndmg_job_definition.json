@@ -1,18 +1,32 @@
 {
-    "jobDefinitionName": "ndmg",
-    "type": "container",
+    "jobName": "<JOBNAME>", 
+    "jobQueue": "ndmg-queue", 
+    "dependsOn": [], 
+    "jobDefinition": "ndmg", 
     "parameters": {},
-    "containerProperties": {
-        "image": "tagarwa2/fngs",
-        "vcpus": 4,
-        "memory": 28000,
-        "command": [],
-        "volumes": [],
-        "environment": [],
-        "mountPoints": [],
-        "ulimits": [],
-    },
-    "retryStrategy": {
-        "attempts": 1
+    "containerOverrides": {
+        "command": [
+            "/data/raw",
+            "/data/outputs",
+            "participant",
+            "<MODE>",
+            "--bucket",
+            "<BUCKET>",
+            "--remote_path",
+            "<PATH>",
+            "--participant_label",
+            "<SUBJ>",
+            "--push_data"
+        ],
+        "environment": [
+            {
+                "name": "AWS_ACCESS_KEY_ID",
+                "value": "<KEYID>"
+            },
+            {
+                "name": "AWS_SECRET_ACCESS_KEY",
+                "value": "<SECRET>"
+            }
+        ]
     }
 }
