@@ -1,32 +1,11 @@
 {
-    "jobName": "<JOBNAME>", 
-    "jobQueue": "ndmg-queue", 
-    "dependsOn": [], 
-    "jobDefinition": "ndmg", 
-    "parameters": {},
-    "containerOverrides": {
-        "command": [
-            "/data/raw",
-            "/data/outputs",
-            "participant",
-            "<MODE>",
-            "--bucket",
-            "<BUCKET>",
-            "--remote_path",
-            "<PATH>",
-            "--participant_label",
-            "<SUBJ>",
-            "--push_data"
-        ],
-        "environment": [
-            {
-                "name": "AWS_ACCESS_KEY_ID",
-                "value": "<KEYID>"
-            },
-            {
-                "name": "AWS_SECRET_ACCESS_KEY",
-                "value": "<SECRET>"
-            }
-        ]
-    }
+    "jobQueueName": "ndmg-queue",
+    "state": "ENABLED",
+    "priority": 1,
+    "computeEnvironmentOrder": [
+        {
+            "order": 1,
+            "computeEnvironment": "arn:aws:batch:us-east-1:967305970717:compute-environment/ndmg-env"
+        }
+    ]
 }
