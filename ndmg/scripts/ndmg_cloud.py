@@ -32,12 +32,12 @@ import boto3
 import json
 import ast
 
-participant_templ = 'https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_cloud_participant.json'
-group_templ = 'https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_cloud_group.json'
+participant_templ = 'https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_cloud_participant.json'
+group_templ = 'https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_cloud_group.json'
 
 
 def batch_submit(bucket, path, jobdir, credentials=None, state='participant',
-                 debug=False, dataset=None, log=False, mode='func'):
+                 debug=False, dataset=None, log=False, stc=None, mode='func'):
     """
     Searches through an S3 bucket, gets all subject-ids, creates json files
     for each, submits batch jobs, and returns list of job ids to query status
@@ -49,7 +49,7 @@ def batch_submit(bucket, path, jobdir, credentials=None, state='participant',
 
     print("Generating job for each subject...")
     jobs = create_json(bucket, path, threads, jobdir, group, credentials,
-                       debug, dataset, log, mode)
+                       debug, dataset, log, stc, mode)
 
     print("Submitting jobs to the queue...")
     ids = submit_jobs(jobs, jobdir)
@@ -83,7 +83,7 @@ def crawl_bucket(bucket, path, group=False):
 
 
 def create_json(bucket, path, threads, jobdir, group=False, credentials=None,
-                debug=False, dataset=None, log=False, mode='func'):
+                debug=False, dataset=None, log=False, stc=None, mode='func'):
     """
     Takes parameters to make jsons
     """
@@ -117,12 +117,11 @@ def create_json(bucket, path, threads, jobdir, group=False, credentials=None,
     else:
         env = []
     template['containerOverrides']['environment'] = env
-
     jobs = list()
     cmd[3] = re.sub('(<MODE>)', mode, cmd[3])
     cmd[5] = re.sub('(<BUCKET>)', bucket, cmd[5])
     cmd[7] = re.sub('(<PATH>)', path, cmd[7])
-    
+    cmd[12] = re.sub('(<STC>)', stc, cmd[12])
     if group:
         if dataset is not None:
             cmd[10] = re.sub('(<DATASET>)', dataset, cmd[10])
@@ -285,6 +284,9 @@ def main():
                         'temp files along the path of processing.',
                         default=False)
     parser.add_argument('--dataset', action='store', help='Dataset name')
+    parser.add_argument('--stc', action='store', choices=['None', 'interleaved',
+                        'up', 'down'], default=None, help="The slice timing "
+                        "direction to correct. Not necessary.")
     parser.add_argument('--modality', action='store', choices=['func', 'dwi'],
                         help='Pipeline to run')
     result = parser.parse_args()
@@ -299,6 +301,56 @@ def main():
     dset = result.dataset
     log = result.log
     mode = result.modality
+    stc = result.stc
+
+    # extract credentials from csv
+    credfile = open(creds, 'rb')
+    reader = csv.reader(credfile)
+    rowcounter = 0
+    for row in reader:
+        if rowcounter == 1:
+            public_access_key = str(row[2])
+            secret_access_key = str(row[3])
+        rowcounter = rowcounter + 1
+    
+    # set environment variables to user credentials
+    os.environ['AWS_ACCESS_KEY_ID'] = public_access_key
+    os.environ['AWS_SECRET_ACCESS_KEY'] = secret_access_key
+    os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
+
+    # check existence of ndmg compute environment and create if necessary
+    cmd = "aws batch describe-compute-environments --compute-environments ndmg-env > temp.json"
+    os.system(cmd)
+    jsonfile = json.load(open("temp.json", 'r'))
+    if len(jsonfile["computeEnvironments"]) == 0:
+        cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_compute_environment.json'
+        os.system(cmd)
+        cmd = 'aws batch create-compute-environment --cli-input-json ndmg_compute_environment.json'
+        os.system(cmd)
+    
+    # check existence of ndmg queue and create if necessary
+    cmd = "aws batch describe-job-queues --job-queues ndmg-queue > temp.json"
+    os.system(cmd)
+    jsonfile = json.load(open("temp.json", 'r'))
+    if len(jsonfile["jobQueues"]) == 0:
+        cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_queue.json'
+        os.system(cmd)
+        cmd = 'aws batch create-job-queue --cli-input-json ndmg_job_queue.json'
+        os.system(cmd)
+
+    # check existence of ndmg job definition and create if necessary
+    cmd = "aws batch describe-job-definitions --status ACTIVE > temp.json"
+    os.system(cmd)
+    jsonfile = json.load(open("temp.json", 'r'))
+    found = False
+    for i in range(len(jsonfile["jobDefinitions"])):
+        if jsonfile["jobDefinitions"][i]["jobDefinitionName"] == 'ndmg':
+            found = True
+    if found == False:
+        cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_definition.json'
+        os.system(cmd)
+        cmd = 'aws batch register-job-definition --cli-input-json ndmg_job_definition.json'
+        os.system(cmd)
 
     if jobdir is None:
         jobdir = './'
@@ -316,7 +368,7 @@ def main():
         kill_jobs(jobdir)
     elif state == 'group' or state == 'participant':
         print("Beginning batch submission process...")
-        batch_submit(bucket, path, jobdir, creds, state, debug, dset, log, mode)
+        batch_submit(bucket, path, jobdir, creds, state, debug, dset, log, stc, mode)
 
     sys.exit(0)
 
