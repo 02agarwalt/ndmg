@@ -10,7 +10,7 @@
         "volumes": [],
         "environment": [],
         "mountPoints": [],
-        "ulimits": [],
+        "ulimits": []
     },
     "retryStrategy": {
         "attempts": 1
