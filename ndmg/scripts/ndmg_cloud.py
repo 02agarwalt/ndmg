@@ -339,6 +339,8 @@ def main():
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
         time.sleep(15)
+        os.system("rm user.json")
+        os.system("rm ndmg_compute_environment.json")
     
     # check existence of ndmg queue and create if necessary
     cmd = "aws batch describe-job-queues --job-queues ndmg-queue > temp.json"
@@ -350,6 +352,7 @@ def main():
         cmd = 'aws batch create-job-queue --cli-input-json file://ndmg_job_queue.json'
         os.system(cmd)
         time.sleep(5)
+        os.system("rm ndmg_job_queue.json")
 
     # check existence of ndmg job definition and create if necessary
     cmd = "aws batch describe-job-definitions --status ACTIVE > temp.json"
@@ -364,6 +367,8 @@ def main():
         os.system(cmd)
         cmd = 'aws batch register-job-definition --cli-input-json file://ndmg_job_definition.json'
         os.system(cmd)
+        time.sleep(5)
+        os.system("rm ndmg_job_definition.json")
 
     if jobdir is None:
         jobdir = './'
