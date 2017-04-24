@@ -31,6 +31,7 @@ import csv
 import boto3
 import json
 import ast
+import time
 
 participant_templ = 'https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_cloud_participant.json'
 group_templ = 'https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_cloud_group.json'
@@ -327,6 +328,7 @@ def main():
         os.system(cmd)
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
+        time.sleep(5)
     
     # check existence of ndmg queue and create if necessary
     cmd = "aws batch describe-job-queues --job-queues ndmg-queue > temp.json"
