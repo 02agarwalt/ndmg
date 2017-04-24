@@ -351,7 +351,7 @@ def main():
         os.system(cmd)
         cmd = 'aws batch create-job-queue --cli-input-json file://ndmg_job_queue.json'
         os.system(cmd)
-        time.sleep(5)
+        time.sleep(15)
         os.system("rm ndmg_job_queue.json")
 
     # check existence of ndmg job definition and create if necessary
