@@ -309,8 +309,8 @@ def main():
     rowcounter = 0
     for row in reader:
         if rowcounter == 1:
-            public_access_key = str(row[2])
-            secret_access_key = str(row[3])
+            public_access_key = str(row[0])
+            secret_access_key = str(row[1])
         rowcounter = rowcounter + 1
     
     # set environment variables to user credentials
@@ -325,7 +325,7 @@ def main():
     if len(jsonfile["computeEnvironments"]) == 0:
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_compute_environment.json'
         os.system(cmd)
-        cmd = 'aws batch create-compute-environment --cli-input-json ndmg_compute_environment.json'
+        cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
     
     # check existence of ndmg queue and create if necessary
@@ -335,7 +335,7 @@ def main():
     if len(jsonfile["jobQueues"]) == 0:
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_queue.json'
         os.system(cmd)
-        cmd = 'aws batch create-job-queue --cli-input-json ndmg_job_queue.json'
+        cmd = 'aws batch create-job-queue --cli-input-json file://ndmg_job_queue.json'
         os.system(cmd)
 
     # check existence of ndmg job definition and create if necessary
@@ -349,7 +349,7 @@ def main():
     if found == False:
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_definition.json'
         os.system(cmd)
-        cmd = 'aws batch register-job-definition --cli-input-json ndmg_job_definition.json'
+        cmd = 'aws batch register-job-definition --cli-input-json file://ndmg_job_definition.json'
         os.system(cmd)
 
     if jobdir is None:
