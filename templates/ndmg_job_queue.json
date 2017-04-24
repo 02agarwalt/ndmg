@@ -5,7 +5,7 @@
     "computeEnvironmentOrder": [
         {
             "order": 1,
-            "computeEnvironment": "arn:aws:batch:us-east-1:967305970717:compute-environment/ndmg-env"
+            "computeEnvironment": "ndmg-env"
         }
     ]
 }
