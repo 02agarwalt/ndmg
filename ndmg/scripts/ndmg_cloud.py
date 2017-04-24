@@ -328,7 +328,7 @@ def main():
         os.system(cmd)
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
-        time.sleep(5)
+        time.sleep(15)
     
     # check existence of ndmg queue and create if necessary
     cmd = "aws batch describe-job-queues --job-queues ndmg-queue > temp.json"
