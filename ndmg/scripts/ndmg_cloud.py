@@ -324,7 +324,7 @@ def main():
     os.system(cmd)
     jsonfile = json.load(open("temp.json", 'r'))
     if len(jsonfile["computeEnvironments"]) == 0:
-        cmd = 'aws batch get-user > user.json'
+        cmd = 'aws iam get-user > user.json'
         os.system(cmd)
         x = json.load(open("user.json", 'r'))
         userarn = x["User"]["Arn"]
