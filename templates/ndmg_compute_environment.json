@@ -1,5 +1,5 @@
 {
-    "computeEnvironmentName": "ndmg-env",
+    "computeEnvironmentName": "ndmg-fmri-env",
     "type": "MANAGED",
     "state": "ENABLED",
     "computeResources": {
