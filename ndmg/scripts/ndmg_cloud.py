@@ -320,7 +320,7 @@ def main():
     os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
 
     # check existence of ndmg compute environment and create if necessary
-    cmd = "aws batch describe-compute-environments --compute-environments ndmg-env > temp.json"
+    cmd = "aws batch describe-compute-environments --compute-environments ndmg-fmri-env > temp.json"
     os.system(cmd)
     jsonfile = json.load(open("temp.json", 'r'))
     if len(jsonfile["computeEnvironments"]) == 0:
@@ -343,7 +343,7 @@ def main():
         os.system("rm ndmg_compute_environment.json")
     
     # check existence of ndmg queue and create if necessary
-    cmd = "aws batch describe-job-queues --job-queues ndmg-queue > temp.json"
+    cmd = "aws batch describe-job-queues --job-queues ndmg-fmri-queue > temp.json"
     os.system(cmd)
     jsonfile = json.load(open("temp.json", 'r'))
     if len(jsonfile["jobQueues"]) == 0:
@@ -360,7 +360,7 @@ def main():
     jsonfile = json.load(open("temp.json", 'r'))
     found = False
     for i in range(len(jsonfile["jobDefinitions"])):
-        if jsonfile["jobDefinitions"][i]["jobDefinitionName"] == 'ndmg':
+        if jsonfile["jobDefinitions"][i]["jobDefinitionName"] == 'ndmg-fmri':
             found = True
     if found == False:
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_definition.json'
