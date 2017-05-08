@@ -5,7 +5,7 @@
     "containerProperties": {
         "image": "tagarwa2/fngs",
         "vcpus": 2,
-        "memory": 15000,
+        "memory": 15360,
         "command": [],
         "volumes": [],
         "environment": [],
