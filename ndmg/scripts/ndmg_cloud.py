@@ -335,6 +335,8 @@ def main():
         envtempl = json.load(open("ndmg_compute_environment.json", 'r'))
         envtempl["computeResources"]["instanceRole"] = userarn + "instance-profile/ecsInstanceRole"
         envtempl["serviceRole"] = userarn + "role/service-role/AWSBatchServiceRole"
+        envtempl["computeResources"]["securityGroupIds"] = []
+        envtempl["computeResources"]["subnets"] = []
         json.dump(envtempl, open("ndmg_compute_environment.json", 'w'))
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
