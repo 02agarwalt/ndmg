@@ -10,6 +10,7 @@
         "instanceTypes": [
             "r4.large"
         ],
+        "imageId": "ami-275ffe31",
         "subnets": [
             "subnet-a1d3b49d",
             "subnet-81c1a7e4",
