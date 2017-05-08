@@ -357,7 +357,7 @@ def main():
         json.dump(envtempl, open("ndmg_compute_environment.json", 'w'))
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
-        time.sleep(15)
+        time.sleep(30)
         os.system("rm user.json")
         os.system("rm subnets.json")
         os.system("rm security_groups.json")
@@ -372,7 +372,7 @@ def main():
         os.system(cmd)
         cmd = 'aws batch create-job-queue --cli-input-json file://ndmg_job_queue.json'
         os.system(cmd)
-        time.sleep(15)
+        time.sleep(30)
         os.system("rm ndmg_job_queue.json")
 
     # check existence of ndmg job definition and create if necessary
