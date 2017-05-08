@@ -339,19 +339,28 @@ def main():
           if y["Subnets"][i]["AvailabilityZone"][0:9] == "us-east-1":
             new_id = y["Subnets"][i]["SubnetId"]
             subnets_list.append(new_id)
+            
+        security_groups_list = []
+        cmd = "aws ec2 describe-security-groups --group-names default > security_groups.json"
+        os.system(cmd)
+        z = json.load(open("security_groups.json", 'r'))
+        new_group = z["SecurityGroups"][0]["GroupId"]
+        security_groups_list.append(new_group)
         
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_compute_environment.json'
         os.system(cmd)
         envtempl = json.load(open("ndmg_compute_environment.json", 'r'))
         envtempl["computeResources"]["instanceRole"] = userarn + "instance-profile/ecsInstanceRole"
         envtempl["serviceRole"] = userarn + "role/service-role/AWSBatchServiceRole"
-        envtempl["computeResources"]["securityGroupIds"] = []
+        envtempl["computeResources"]["securityGroupIds"] = security_groups_list
         envtempl["computeResources"]["subnets"] = subnets_list
         json.dump(envtempl, open("ndmg_compute_environment.json", 'w'))
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
         time.sleep(15)
         os.system("rm user.json")
+        os.system("rm subnets.json")
+        os.system("rm security_groups.json")
         os.system("rm ndmg_compute_environment.json")
     
     # check existence of ndmg queue and create if necessary
