@@ -330,13 +330,23 @@ def main():
         userarn = x["User"]["Arn"]
         usernamelength = len(x["User"]["UserName"])
         userarn = userarn[: -1*(usernamelength + 5)]
+        
+        subnets_list = []
+        cmd = "aws ec2 describe-subnets --filters 'Name=default-for-az,Values=true' > subnets.json"
+        os.system(cmd)
+        y = json.load(open("subnets.json", 'r'))
+        for i in range(len(y["Subnets"])):
+          if y["Subnets"][i]["AvailabilityZone"][0:9] == "us-east-1":
+            new_id = y["Subnets"][i]["SubnetId"]
+            subnets_list.append(new_id)
+        
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_compute_environment.json'
         os.system(cmd)
         envtempl = json.load(open("ndmg_compute_environment.json", 'r'))
         envtempl["computeResources"]["instanceRole"] = userarn + "instance-profile/ecsInstanceRole"
         envtempl["serviceRole"] = userarn + "role/service-role/AWSBatchServiceRole"
         envtempl["computeResources"]["securityGroupIds"] = []
-        envtempl["computeResources"]["subnets"] = []
+        envtempl["computeResources"]["subnets"] = subnets_list
         json.dump(envtempl, open("ndmg_compute_environment.json", 'w'))
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
