@@ -8,7 +8,7 @@
         "maxvCpus": 256,
         "desiredvCpus": 4,
         "instanceTypes": [
-            "r4.xlarge"
+            "r4.large"
         ],
         "subnets": [
             "subnet-a1d3b49d",
