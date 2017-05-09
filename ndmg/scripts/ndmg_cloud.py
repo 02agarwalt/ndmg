@@ -323,6 +323,7 @@ def main():
     cmd = "aws batch describe-compute-environments --compute-environments ndmg-fmri-env > temp.json"
     os.system(cmd)
     jsonfile = json.load(open("temp.json", 'r'))
+    os.system("rm temp.json")
     if len(jsonfile["computeEnvironments"]) == 0:
         cmd = 'aws iam get-user > user.json'
         os.system(cmd)
@@ -357,16 +358,27 @@ def main():
         json.dump(envtempl, open("ndmg_compute_environment.json", 'w'))
         cmd = 'aws batch create-compute-environment --cli-input-json file://ndmg_compute_environment.json'
         os.system(cmd)
-        time.sleep(30)
+        time.sleep(5)
         os.system("rm user.json")
         os.system("rm subnets.json")
         os.system("rm security_groups.json")
         os.system("rm ndmg_compute_environment.json")
+        
+        enabled = False
+        while (not enabled):
+          print("Waiting for compute environment to be created...")
+          cmd = "aws batch describe-compute-environments --compute-environments ndmg-fmri-env > temp.json"
+          os.system(cmd)
+          jsonfile = json.load(open("temp.json", 'r'))
+          if (jsonfile["computeEnvironments"][0]["status"] == "VALID") and (jsonfile["computeEnvironments"][0]["state"] == "ENABLED"):
+            enabled = True
+          os.system("rm temp.json")
     
     # check existence of ndmg queue and create if necessary
     cmd = "aws batch describe-job-queues --job-queues ndmg-fmri-queue > temp.json"
     os.system(cmd)
     jsonfile = json.load(open("temp.json", 'r'))
+    os.system("rm temp.json")
     if len(jsonfile["jobQueues"]) == 0:
         cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_queue.json'
         os.system(cmd)
@@ -379,6 +391,7 @@ def main():
     cmd = "aws batch describe-job-definitions --status ACTIVE > temp.json"
     os.system(cmd)
     jsonfile = json.load(open("temp.json", 'r'))
+    os.system("rm temp.json")
     found = False
     for i in range(len(jsonfile["jobDefinitions"])):
         if jsonfile["jobDefinitions"][i]["jobDefinitionName"] == 'ndmg-fmri':
