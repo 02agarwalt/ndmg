@@ -348,7 +348,7 @@ def main():
         new_group = z["SecurityGroups"][0]["GroupId"]
         security_groups_list.append(new_group)
         
-        cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_compute_environment.json'
+        cmd = 'wget https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_compute_environment.json'
         os.system(cmd)
         envtempl = json.load(open("ndmg_compute_environment.json", 'r'))
         envtempl["computeResources"]["instanceRole"] = userarn + "instance-profile/ecsInstanceRole"
@@ -380,7 +380,7 @@ def main():
     jsonfile = json.load(open("temp.json", 'r'))
     os.system("rm temp.json")
     if len(jsonfile["jobQueues"]) == 0:
-        cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_queue.json'
+        cmd = 'wget https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_job_queue.json'
         os.system(cmd)
         cmd = 'aws batch create-job-queue --cli-input-json file://ndmg_job_queue.json'
         os.system(cmd)
@@ -397,7 +397,7 @@ def main():
         if jsonfile["jobDefinitions"][i]["jobDefinitionName"] == 'ndmg-fmri':
             found = True
     if found == False:
-        cmd = 'wget https://raw.githubusercontent.com/02agarwalt/ndmg/master/templates/ndmg_job_definition.json'
+        cmd = 'wget https://raw.githubusercontent.com/neurodata/ndmg/eric-dev-gkiar-fmri/templates/ndmg_job_definition.json'
         os.system(cmd)
         cmd = 'aws batch register-job-definition --cli-input-json file://ndmg_job_definition.json'
         os.system(cmd)
